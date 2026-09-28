@@ -1,0 +1,22 @@
+# Pin opencv to 4.x — 5.0 previews dropped bindings we rely on.
+opencv-python>=4.8,<5
+
+# SCRFD face detector (ONNX). Runs on CPU via onnxruntime.
+insightface>=2.0
+onnxruntime>=1.17
+
+# ByteTrack (Kalman motion + two-stage cascade) via supervision.
+# Pin below 0.31 — supervision plans to remove ByteTrack in that release.
+supervision>=0.28,<0.31
+
+# Independent RetinaFace-ResNet50 (PyTorch) used only for the QC audit.
+facexlib>=0.3
+
+# Web UI
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+jinja2>=3.1
+
+# Utilities
+numpy>=1.24

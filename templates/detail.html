@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Job {{ job.event_id }} · FaceGuard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #333333;
+    --heading: #0c0c0c;
+    --muted: #737373;
+    --border: #e5e5e5;
+    --card: #fafafa;
+    --green: #16a34a;
+    --green-hover: #15803d;
+    --green-soft: #dcfce7;
+    --amber: #d97706;
+    --amber-soft: #fef3c7;
+    --blue: #2563eb;
+    --blue-soft: #dbeafe;
+    --red: #dc2626;
+    --red-soft: #fee2e2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    font-weight: 400; line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+  a { color: var(--green); }
+  .back { display: inline-flex; align-items: center; gap: 0.35rem;
+          color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+  .back:hover { color: var(--heading); }
+
+  h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em;
+       color: var(--heading); margin: 1.25rem 0 0.5rem; }
+  h1 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.75em; background: transparent; color: var(--muted);
+            font-weight: 500; padding: 0; }
+  h2 { font-size: 1.25rem; font-weight: 600; color: var(--heading);
+       letter-spacing: -0.01em; margin: 0 0 1rem; }
+
+  .status-line { display: flex; align-items: center; gap: 0.75rem;
+                 margin: 0 0 2rem; color: var(--muted); font-size: 0.95rem; }
+  .pill {
+    display: inline-block; padding: 4px 12px; border-radius: 9999px;
+    font-size: 0.85rem; font-weight: 500;
+  }
+  .pill-pending    { background: var(--amber-soft); color: var(--amber); }
+  .pill-processing { background: var(--blue-soft);  color: var(--blue); }
+  .pill-completed  { background: var(--green-soft); color: var(--green-hover); }
+  .pill-failed     { background: var(--red-soft);   color: var(--red); }
+
+  .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem;
+  }
+  @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+  .video-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+    padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;
+  }
+  .video-card h3 { margin: 0; font-size: 0.85rem; font-weight: 500;
+                   color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  video { width: 100%; background: #000; border-radius: 16px; display: block; }
+  .anon-placeholder {
+    aspect-ratio: 16 / 9; background: white;
+    border: 1px dashed var(--border); border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 0.9rem;
+  }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 1.75rem; margin: 1.25rem 0;
+  }
+  .card .subtitle { color: var(--muted); font-size: 0.9rem; margin: -0.5rem 0 1rem; }
+
+  pre { background: white; border: 1px solid var(--border); border-radius: 12px;
+        padding: 1rem; overflow: auto; font-size: 0.85rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--heading); margin: 0; }
+
+  button, .btn {
+    font-family: inherit; font-weight: 600; font-size: 0.95rem;
+    padding: 0.75rem 1.5rem; border-radius: 9999px;
+    border: none; cursor: pointer; transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  button.primary, .btn.primary { background: var(--green); color: white; }
+  button.primary:hover { background: var(--green-hover); }
+  button:disabled { opacity: 0.55; cursor: default; }
+  button.primary:disabled:hover { background: var(--green); }
+
+  .metric-strip { display: flex; gap: 3rem; flex-wrap: wrap;
+                  margin: 1.5rem 0 1rem; }
+  .metric-strip .metric-label { color: var(--muted); font-size: 0.8rem;
+                                text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric-strip .metric-value { font-size: 2rem; font-weight: 700;
+                                letter-spacing: -0.02em; color: var(--heading); }
+  .metric-strip .metric-value.good { color: var(--green); }
+
+  .check-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .check-row .check-status { color: var(--muted); font-size: 0.9rem; }
+
+  .error {
+    background: var(--red-soft); color: var(--red);
+    padding: 0.9rem 1.1rem; border-radius: 16px; margin-bottom: 1.5rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="/">← back</a>
+  <h1>Job <code>{{ job.event_id }}</code></h1>
+  <div class="status-line">
+    <span>status:</span>
+    <span id="status" class="pill pill-{{ job.status }}">{{ job.status }}</span>
+    <span id="qcPill"></span>
+  </div>
+
+  {% if job.error %}
+  <div class="error"><b>Error:</b> {{ job.error }}</div>
+  {% endif %}
+
+  <div class="grid">
+    <div class="video-card">
+      <h3>Original</h3>
+      <video controls playsinline src="/media/original/{{ job.event_id }}"></video>
+    </div>
+    <div class="video-card">
+      <h3>Anonymized</h3>
+      <video id="anon" controls playsinline style="display:none"></video>
+      <div id="anonPh" class="anon-placeholder">processing…</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Pipeline stats</h2>
+    <p class="subtitle">Detection, tracking and blur applied to every frame.</p>
+    <pre id="stats">{{ (job.stats | tojson(indent=2)) if job.stats else 'not available yet' }}</pre>
+  </div>
+
+  <div class="card">
+    <h2>Independent QC on output</h2>
+    <p class="subtitle">
+      Independent RetinaFace-ResNet50 pass over the anonymized video,
+      sampling 1 frame per second. Any face still detected is a residual leak.
+    </p>
+    <div class="check-row">
+      <button id="qcBtn" class="primary"
+              {% if job.status != 'completed' %}disabled{% endif %}>Run QC</button>
+      <span id="qcStatus" class="check-status">
+        {% if job.status != 'completed' %}wait for anonymization to finish{% endif %}
+      </span>
+    </div>
+    <div id="qcMetrics" style="{% if not job.qc %}display:none{% endif %}">
+      <div class="metric-strip">
+        <div>
+          <div class="metric-label">Residual leak frames</div>
+          <div class="metric-value" id="qcResidual">–</div>
+        </div>
+        <div>
+          <div class="metric-label">Frames sampled</div>
+          <div class="metric-value" id="qcFrames">–</div>
+        </div>
+        <div>
+          <div class="metric-label">Verdict</div>
+          <div class="metric-value" id="qcVerdict">–</div>
+        </div>
+      </div>
+      <pre id="qcBlock">{% if job.qc %}{{ job.qc | tojson(indent=2) }}{% endif %}</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+const EVENT_ID = {{ job.event_id | tojson }};
+
+function renderQc(qc) {
+  document.getElementById('qcMetrics').style.display = '';
+  document.getElementById('qcResidual').textContent =
+      qc.residual_face_frames + ' / ' + qc.frames_checked;
+  document.getElementById('qcFrames').textContent = qc.frames_checked;
+  const verdict = document.getElementById('qcVerdict');
+  verdict.textContent = qc.flagged ? 'flagged' : 'clean';
+  verdict.style.color = qc.flagged ? 'var(--red)' : 'var(--green)';
+  document.getElementById('qcBlock').textContent = JSON.stringify(qc, null, 2);
+
+  const pill = document.getElementById('qcPill');
+  pill.className = 'pill ' + (qc.flagged ? 'pill-failed' : 'pill-completed');
+  pill.textContent = qc.flagged
+    ? `QC flagged (${qc.residual_face_frames}/${qc.frames_checked} frames)`
+    : `QC clean (${qc.frames_checked} frames sampled)`;
+}
+
+async function refresh() {
+  const j = await (await fetch('/jobs/' + EVENT_ID,
+                    { headers: { 'Accept': 'application/json' } })).json();
+
+  const st = document.getElementById('status');
+  st.textContent = j.status;
+  st.className = 'pill pill-' + j.status;
+
+  if (j.status === 'completed') {
+    const v = document.getElementById('anon');
+    if (!v.src) {
+      v.src = '/media/anonymized/' + EVENT_ID;
+      v.style.display = 'block';
+      document.getElementById('anonPh').style.display = 'none';
+    }
+    if (j.stats) document.getElementById('stats').textContent =
+        JSON.stringify(j.stats, null, 2);
+    const btn = document.getElementById('qcBtn');
+    if (btn.disabled && !btn.dataset.running) {
+      btn.disabled = false;
+      document.getElementById('qcStatus').textContent = '';
+    }
+  } else if (j.status === 'failed') {
+    document.getElementById('anonPh').textContent = 'failed';
+    return;
+  }
+
+  if (j.qc) renderQc(j.qc);
+
+  if (j.status !== 'completed' && j.status !== 'failed') setTimeout(refresh, 1500);
+}
+
+document.getElementById('qcBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('qcBtn');
+  btn.disabled = true;
+  btn.dataset.running = '1';
+  document.getElementById('qcStatus').textContent =
+      'scanning anonymized output with the QC detector…';
+  await fetch('/qc/' + EVENT_ID, { method: 'POST' });
+  const poll = async () => {
+    const j = await (await fetch('/jobs/' + EVENT_ID,
+                      { headers: { 'Accept': 'application/json' } })).json();
+    if (j.qc) {
+      renderQc(j.qc);
+      document.getElementById('qcStatus').textContent = 'done';
+      btn.disabled = false;
+      delete btn.dataset.running;
+    } else {
+      setTimeout(poll, 2000);
+    }
+  };
+  poll();
+});
+
+refresh();
+</script>
+</body>
+</html>

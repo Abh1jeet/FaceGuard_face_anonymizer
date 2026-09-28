@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Face Anonymizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #333333;
+    --heading: #0c0c0c;
+    --muted: #737373;
+    --border: #e5e5e5;
+    --card: #fafafa;
+    --green: #16a34a;
+    --green-hover: #15803d;
+    --green-soft: #dcfce7;
+    --amber: #d97706;
+    --amber-soft: #fef3c7;
+    --blue: #2563eb;
+    --blue-soft: #dbeafe;
+    --red: #dc2626;
+    --red-soft: #fee2e2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 880px; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
+
+  .brand { color: var(--green); font-weight: 700; font-size: 1.6rem; letter-spacing: -0.01em; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid var(--border); border-radius: 9999px;
+    padding: 0.4rem 0.9rem; font-size: 0.85rem; color: var(--heading);
+    margin: 1.75rem 0 1rem;
+  }
+  .badge::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    line-height: 1.1; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--heading); margin: 0 0 0.5rem;
+  }
+  .lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 2.5rem; max-width: 40rem; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 1.75rem; margin: 1.25rem 0;
+  }
+  .card h2 {
+    margin: 0 0 1rem; font-size: 1.25rem; font-weight: 600;
+    color: var(--heading); letter-spacing: -0.01em;
+  }
+  .card p.hint { margin: 0 0 1.25rem; color: var(--muted); font-size: 0.95rem; }
+
+  form { display: flex; flex-direction: column; gap: 0.9rem; }
+  .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  input[type=file], select {
+    font-family: inherit; font-size: 0.95rem;
+    padding: 0.7rem 0.9rem; border: 1px solid var(--border);
+    border-radius: 12px; background: white; color: var(--heading);
+    width: 100%;
+  }
+  input[type=file]::file-selector-button {
+    font-family: inherit; font-weight: 500; font-size: 0.9rem;
+    padding: 0.4rem 0.9rem; margin-right: 0.9rem;
+    border: 1px solid var(--border); border-radius: 9999px;
+    background: white; color: var(--heading); cursor: pointer;
+  }
+  button, .btn {
+    font-family: inherit; font-weight: 600; font-size: 0.95rem;
+    padding: 0.75rem 1.5rem; border-radius: 9999px;
+    border: none; cursor: pointer; transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  button.primary, .btn.primary { background: var(--green); color: white; }
+  button.primary:hover { background: var(--green-hover); }
+  button.ghost {
+    background: white; color: var(--heading); border: 1px solid var(--border);
+  }
+  button.ghost:hover { background: #f5f5f5; }
+  button:disabled { opacity: 0.55; cursor: default; }
+
+  .jobs { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .job-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.75rem 1rem; background: white;
+    border: 1px solid var(--border); border-radius: 16px;
+  }
+  .job-row code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                  font-size: 0.85rem; color: var(--heading); }
+  .job-row a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+  .job-row a:hover { text-decoration: underline; }
+
+  .pill {
+    display: inline-block; padding: 3px 10px; border-radius: 9999px;
+    font-size: 0.8rem; font-weight: 500;
+  }
+  .pill-pending    { background: var(--amber-soft); color: var(--amber); }
+  .pill-processing { background: var(--blue-soft);  color: var(--blue); }
+  .pill-completed  { background: var(--green-soft); color: var(--green-hover); }
+  .pill-failed     { background: var(--red-soft);   color: var(--red); }
+  .empty { color: var(--muted); font-size: 0.9rem; padding: 0.5rem 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">FaceGuard</div>
+  <div class="badge">SCRFD + ByteTrack · RetinaFace QC</div>
+  <h1>Anonymize faces in body-cam video.</h1>
+  <p class="lede">Upload a clip and get back a privacy-safe version.</p>
+
+  <div class="card">
+    <h2>Upload video</h2>
+    <p class="hint">MP4, MOV, MKV or AVI. Runs the full detect → track → blur pipeline.</p>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept="video/*" required/>
+      <div><button type="submit" class="primary">Anonymize video →</button></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Recent jobs</h2>
+    <div id="jobs" class="jobs"><p class="empty">no jobs yet.</p></div>
+  </div>
+</div>
+
+<script>
+async function refresh() {
+  const rows = await (await fetch('/jobs')).json();
+  const box = document.getElementById('jobs');
+  if (!rows.length) { box.innerHTML = '<p class="empty">no jobs yet.</p>'; return; }
+  box.innerHTML = rows.map(j => {
+    let qc = '';
+    if (j.qc_flagged === false) qc = '<span class="pill pill-completed">QC clean</span>';
+    else if (j.qc_flagged === true) qc = '<span class="pill pill-failed">QC flagged</span>';
+    return `
+    <div class="job-row">
+      <div><code>${j.event_id}</code></div>
+      <div class="row">
+        <span class="pill pill-${j.status}">${j.status}</span>
+        ${qc}
+        <a href="/jobs/${j.event_id}">open →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body>
+</html>
