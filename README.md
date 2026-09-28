@@ -3,6 +3,17 @@
 FastAPI application that anonymizes faces in body-camera video and
 independently audits the output for residual faces.
 
+## Demo
+
+<!-- GitHub renders this <video> tag inline. In editors that don't
+     render HTML, the link below still opens the clip. -->
+<video src="screenshots/demo.mp4" controls playsinline width="720">
+  Your viewer doesn't support inline video —
+  <a href="screenshots/demo.mp4">watch the demo</a>.
+</video>
+
+▶ [Watch the demo (mp4)](screenshots/demo.mp4)
+
 ```
 video → decode → SCRFD detect → ByteTrack → dilate box → Gaussian blur → mp4
                                                                         │
@@ -26,13 +37,38 @@ First run downloads the model weights:
 - SCRFD (`buffalo_l`) — ~280 MB, cached under `~/.insightface/models/`
 - RetinaFace-ResNet50 — ~104 MB, cached under `.venv/.../facexlib/weights/`
 
-Open the browser at `http://127.0.0.1:8000`:
-1. **Upload video** or pick from `samples/`.
-2. The job appears in *Recent jobs*, transitioning
-   `pending → processing → completed`.
-3. On the detail page, click **Run QC** to run the independent RetinaFace
-   pass; the panel shows residual leak frames, frames sampled and the
-   verdict.
+### Step-by-step walkthrough
+
+**1. Open the landing page** at `http://127.0.0.1:8000`.
+Click **Choose File**, pick a body-cam clip, then hit **Anonymize video →**.
+The *Recent jobs* card shows previously processed jobs with their live
+status and QC verdict pills.
+
+![Landing page](screenshots/01-landing.png)
+
+**2. You are redirected to the job detail page.** The page polls the
+backend every 1.5 s; you'll see the status pill move
+`pending → processing → completed`. When anonymization finishes, the
+original clip appears on the left and the anonymized clip on the right,
+with pipeline stats (frames processed, faces detected, processing FPS).
+
+![Detail page with side-by-side videos and stats](screenshots/02-detail-page.png)
+
+**3. Scroll to the QC card.** Anonymization runs first; QC is
+on-demand so you only pay the extra compute when you actually want to
+audit. Click **Run QC**.
+
+![QC card before running](screenshots/03-qc-before.png)
+
+**4. QC results.** The card shows a **metric strip** — residual leak
+frames, frames sampled, and the verdict pill (**clean** in green /
+**flagged** in red) — plus the raw JSON. In the example below,
+RetinaFace-ResNet50 sampled 91 frames and found a residual face in 1
+of them, so the job is flagged. The header pill next to the status
+also updates to **QC flagged (1/91 frames)** so you can see the
+verdict at a glance from the jobs list.
+
+![QC card with results](screenshots/04-qc-after.png)
 
 ---
 
@@ -123,6 +159,7 @@ templates/
   index.html          # upload form + jobs table with live status
   detail.html         # side-by-side players + Run QC button + metrics
 samples/              # bundled clips for the demo
+screenshots/          # UI screenshots used in this README
 uploads/              # created at runtime — inputs
 outputs/              # created at runtime — anonymized mp4s
 jobs.db               # created at runtime — SQLite job queue
